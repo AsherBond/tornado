@@ -15,6 +15,7 @@ from tornado.httputil import (
     ParseMultipartConfig,
     RequestStartLine,
     format_timestamp,
+    parse_body_arguments,
     parse_cookie,
     parse_multipart_form_data,
     parse_request_start_line,
@@ -92,6 +93,23 @@ class QsParseTest(unittest.TestCase):
         self.assertIn(("a", "1"), qsl)
         self.assertIn(("a", "3"), qsl)
         self.assertIn(("b", "2"), qsl)
+
+
+class UrlEncodedDataTest(unittest.TestCase):
+    def test_urlencoded_data(self):
+        data = b"a=1&b=2&a=3"
+        args, files = form_data_args()
+        parse_body_arguments("application/x-www-form-urlencoded", data, args, files)
+        self.assertEqual(args["a"], [b"1", b"3"])
+        self.assertEqual(args["b"], [b"2"])
+        self.assertEqual(files, {})
+
+    def test_max_arguments(self):
+        data = b"".join(b"a=1&" for _ in range(1001))
+        args, files = form_data_args()
+        with self.assertRaises(HTTPInputError) as cm:
+            parse_body_arguments("application/x-www-form-urlencoded", data, args, files)
+        self.assertIn("Max number of fields exceeded", str(cm.exception))
 
 
 class MultipartFormDataTest(unittest.TestCase):
