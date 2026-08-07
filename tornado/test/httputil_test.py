@@ -581,9 +581,9 @@ class FormatTimestampTest(unittest.TestCase):
 
     def test_utc_naive_datetime(self):
         self.check(
-            datetime.datetime.fromtimestamp(
-                self.TIMESTAMP, datetime.timezone.utc
-            ).replace(tzinfo=None)
+            datetime.datetime.fromtimestamp(self.TIMESTAMP, datetime.UTC).replace(
+                tzinfo=None
+            )
         )
 
     def test_utc_naive_datetime_deprecated(self):
@@ -591,9 +591,7 @@ class FormatTimestampTest(unittest.TestCase):
             self.check(datetime.datetime.utcfromtimestamp(self.TIMESTAMP))
 
     def test_utc_aware_datetime(self):
-        self.check(
-            datetime.datetime.fromtimestamp(self.TIMESTAMP, datetime.timezone.utc)
-        )
+        self.check(datetime.datetime.fromtimestamp(self.TIMESTAMP, datetime.UTC))
 
     def test_other_aware_datetime(self):
         # Other timezones are ignored; the timezone is always printed as GMT

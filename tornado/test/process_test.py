@@ -147,8 +147,7 @@ class ProcessTest(unittest.TestCase):
         result = subprocess.run(
             [sys.executable, "-c", _MULTI_PROCESS_TEST_SCRIPT],
             env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             timeout=30,
         )
         if result.returncode != 0:

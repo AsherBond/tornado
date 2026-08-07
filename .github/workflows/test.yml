@@ -57,25 +57,22 @@ jobs:
           #          if minor == int(dev_python_minor):
           #              # The range trick above doesn't work for threaded builds, so we'll
           #              # just be stuck with last prerelease until we update dev_python_minor.
-          #              configs.append((f"3.{minor}t-dev", f"py3{minor}"))
+          #              configs.append((f"3.{minor}t-dev", f"py3{minor}t"))
           #          else:
-          #              configs.append((f"3.{minor}t", f"py3{minor}"))
-          #    # Early versions of 3.10 and 3.11 had different deprecation
+          #              configs.append((f"3.{minor}t", f"py3{minor}t"))
+          #    # Early versions of 3.11 had different deprecation
           #    # warnings in asyncio. Test with them too to make sure everything
           #    # works the same way.
-          #    configs.append(("3.10.8", "py310-full"))
           #    configs.append(("3.11.0", "py311-full"))
           #    # Pypy is a lot slower due to jit warmup costs, so don't run the
           #    # "full" test config there.
-          #    configs.append(("pypy-3.10", "pypy3"))
+          #    configs.append(("pypy-3.11", "pypy3"))
           #    # Docs python version must be synced with tox.ini
           #    configs.append((f"3.{default_python_minor}", "docs"))
           #    for version, tox_env in configs:
           #      cog.outl(f"  - python: '{version}'")
           #      cog.outl(f"    tox_env: {tox_env}")
           #    ]]]
-          - python: '3.10'
-            tox_env: py310-full
           - python: '3.11'
             tox_env: py311-full
           - python: '3.12'
@@ -83,16 +80,16 @@ jobs:
           - python: '3.13'
             tox_env: py313-full
           - python: '3.14'
-            tox_env: py314
-          - python: '3.14t-dev'
+            tox_env: py314-full
+          - python: '3.14t'
             tox_env: py314t
-          - python: '3.15-dev'
+          - python: '3.15.0-dev - 3.15'
             tox_env: py315
-          - python: '3.10.8'
-            tox_env: py310-full
+          - python: '3.15t-dev'
+            tox_env: py315t
           - python: '3.11.0'
             tox_env: py311-full
-          - python: 'pypy-3.10'
+          - python: 'pypy-3.11'
             tox_env: pypy3
           - python: '3.13'
             tox_env: docs
@@ -175,3 +172,20 @@ jobs:
           # [[[cog cog.outl(f"CIBW_BUILD: cp3{default_python_minor}-manylinux*")]]]
           CIBW_BUILD: cp313-manylinux*
           # [[[end]]]
+
+  test_cog:
+    # Run cog and ensure that nothing changes, to make sure that cog-generated files are not
+    # edited manually.
+    name: Test cog generation
+    runs-on: ubuntu-24.04
+    needs: test_quick
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        name: Install uv
+      - name: Run cog
+        run: maint/scripts/runcog.sh
+      - name: Check for changes
+        run: git diff --exit-code

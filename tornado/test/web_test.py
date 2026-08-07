@@ -486,9 +486,7 @@ class CookieTest(WebTestCase):
         self.assertIsNotNone(match)
         assert match is not None  # for mypy
 
-        expires = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
-            days=10
-        )
+        expires = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=10)
         header_expires = email.utils.parsedate_to_datetime(match.groupdict()["expires"])
         self.assertLess(abs((expires - header_expires).total_seconds()), 10)
 
@@ -1892,7 +1890,7 @@ class DateHeaderTest(SimpleHandlerTestCase):
         response = self.fetch("/")
         header_date = email.utils.parsedate_to_datetime(response.headers["Date"])
         self.assertLess(
-            header_date - datetime.datetime.now(datetime.timezone.utc),
+            header_date - datetime.datetime.now(datetime.UTC),
             datetime.timedelta(seconds=2),
         )
 
@@ -3198,12 +3196,10 @@ class XSRFCookieKwargsTest(SimpleHandlerTestCase):
         match = re.match(".*; expires=(?P<expires>.+);.*", header)
         assert match is not None
 
-        expires = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
-            days=2
-        )
+        expires = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=2)
         header_expires = email.utils.parsedate_to_datetime(match.groupdict()["expires"])
         if header_expires.tzinfo is None:
-            header_expires = header_expires.replace(tzinfo=datetime.timezone.utc)
+            header_expires = header_expires.replace(tzinfo=datetime.UTC)
         self.assertTrue(abs((expires - header_expires).total_seconds()) < 10)
 
 
