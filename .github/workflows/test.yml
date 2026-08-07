@@ -172,3 +172,20 @@ jobs:
           # [[[cog cog.outl(f"CIBW_BUILD: cp3{default_python_minor}-manylinux*")]]]
           CIBW_BUILD: cp313-manylinux*
           # [[[end]]]
+
+  test_cog:
+    # Run cog and ensure that nothing changes, to make sure that cog-generated files are not
+    # edited manually.
+    name: Test cog generation
+    runs-on: ubuntu-24.04
+    needs: test_quick
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        name: Install uv
+      - name: Run cog
+        run: maint/scripts/runcog.sh
+      - name: Check for changes
+        run: git diff --exit-code
