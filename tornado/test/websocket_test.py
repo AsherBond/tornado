@@ -934,11 +934,9 @@ class PingCalculationTest(unittest.TestCase):
     def test_ping_sleep_time(self):
         from tornado.websocket import WebSocketProtocol13
 
-        now = datetime.datetime(2025, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
+        now = datetime.datetime(2025, 1, 1, 12, 0, 0, tzinfo=datetime.UTC)
         interval = 10  # seconds
-        last_ping_time = datetime.datetime(
-            2025, 1, 1, 11, 59, 54, tzinfo=datetime.timezone.utc
-        )
+        last_ping_time = datetime.datetime(2025, 1, 1, 11, 59, 54, tzinfo=datetime.UTC)
         sleep_time = WebSocketProtocol13.ping_sleep_time(
             last_ping_time=last_ping_time.timestamp(),
             interval=interval,

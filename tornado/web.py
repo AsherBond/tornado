@@ -715,7 +715,7 @@ class RequestHandler:
         if domain:
             morsel["domain"] = domain
         if expires_days is not None and not expires:
-            expires = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+            expires = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
                 days=expires_days
             )
         if expires:
@@ -768,9 +768,7 @@ class RequestHandler:
                 raise TypeError(
                     f"clear_cookie() got an unexpected keyword argument '{excluded_arg}'"
                 )
-        expires = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
-            days=365
-        )
+        expires = datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=365)
         self.set_cookie(name, value="", expires=expires, **kwargs)
 
     def clear_all_cookies(self, **kwargs: Any) -> None:
@@ -2889,7 +2887,7 @@ class StaticFileHandler(RequestHandler):
         if cache_time > 0:
             self.set_header(
                 "Expires",
-                datetime.datetime.now(datetime.timezone.utc)
+                datetime.datetime.now(datetime.UTC)
                 + datetime.timedelta(seconds=cache_time),
             )
             self.set_header("Cache-Control", "max-age=" + str(cache_time))
@@ -2914,7 +2912,7 @@ class StaticFileHandler(RequestHandler):
             except Exception:
                 return False
             if if_since.tzinfo is None:
-                if_since = if_since.replace(tzinfo=datetime.timezone.utc)
+                if_since = if_since.replace(tzinfo=datetime.UTC)
             assert self.modified is not None
             if if_since >= self.modified:
                 return True
@@ -3096,7 +3094,7 @@ class StaticFileHandler(RequestHandler):
         # that relies on this), we truncate the float here, although
         # I'm not sure that's the right thing to do.
         modified = datetime.datetime.fromtimestamp(
-            int(stat_result.st_mtime), datetime.timezone.utc
+            int(stat_result.st_mtime), datetime.UTC
         )
         return modified
 

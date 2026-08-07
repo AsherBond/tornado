@@ -91,7 +91,7 @@ class EnglishTest(unittest.TestCase):
             locale.format_date(date, full_format=True), "April 28, 2013 at 6:35 pm"
         )
 
-        aware_dt = datetime.datetime.now(datetime.timezone.utc)
+        aware_dt = datetime.datetime.now(datetime.UTC)
         naive_dt = aware_dt.replace(tzinfo=None)
         for name, now in {"aware": aware_dt, "naive": naive_dt}.items():
             with self.subTest(dt=name):
